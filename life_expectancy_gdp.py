@@ -11,7 +11,7 @@
 # 5) Very focued and limited data, does not account for many other variables that may affect life expectancy positively or negatively.
 # 
 
-# In[1]:
+# In[84]:
 
 
 #import libraries
@@ -19,23 +19,31 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import statsmodels.api as sm
+from scipy.stats import pearsonr
+np.set_printoptions(suppress=True, precision = 1)
 
 
-# In[2]:
+# In[85]:
 
 
 #import csv file
 all_data = pd.read_csv("all_data.csv")
 
 
-# In[3]:
+# In[86]:
 
 
 print(all_data.head())
 print(all_data.describe())
+    
+years = range(len(all_data['Year'].unique()))
+print(years)
+years_label = all_data['Year'].unique()
+print(years_label)
 
 
-# In[4]:
+# In[87]:
 
 
 #convert GDP data to a more usable format
@@ -44,7 +52,7 @@ all_data["GDP_value"] = all_data["GDP"] / 1000000000
 print(all_data.head())
 
 
-# In[5]:
+# In[88]:
 
 
 #f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
@@ -55,9 +63,14 @@ sns.lineplot(
     , hue="Country"
 #    , ax=axs[0]
 )
+plt.xticks(rotation=40)
+ax = plt.subplot()
+ax.set_xticks(years_label)
+ax.set_xticklabels(years_label)
 
 plt.show()
 plt.clf()
+
 
 sns.lineplot(
     data=all_data
@@ -66,249 +79,180 @@ sns.lineplot(
     , hue="Country"
 #    , ax=axs[1]
 )
-#f.tight_layout()
+plt.ylabel("GDP (in billions)")
+plt.xticks(rotation=40)
+ax = plt.subplot()
+ax.set_xticks(years_label)
+ax.set_xticklabels(years_label)
+
+plt.show()
+plt.clf()
+
+sns.displot(data=all_data, x="Life expectancy at birth (years)", hue="Country", col="Country")
+
+plt.show()
+plt.clf()
+
+sns.displot(data=all_data, x="GDP_value", hue="Country", col="Country")
 
 plt.show()
 plt.clf()
 
 
-# In[13]:
-
-
-#separate dictionary for Chile
-chile_data = all_data[all_data.Country == 'Chile']
-
-#separate dictionary for China
-china_data = all_data[all_data.Country == 'China']
-
-#separate dictionary for Germany
-germany_data = all_data[all_data.Country == 'Germany']
-
-#separate dictionary for Mexico
-mexico_data = all_data[all_data.Country == 'Mexico']
-
-#separate dictionary for United States of America
-usa_data = all_data[all_data.Country == 'United States of America']
-
-#separate dictionary for Zimbabwe
-zimbabwe_data = all_data[all_data.Country == 'Zimbabwe']
-
-
-# In[9]:
-
-
-#data visualations for Chile
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=chile_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-#    , hue="Country"
-    , ax=axs[0]
+sns.histplot(
+    data=all_data
+    , x="Life expectancy at birth (years)"
+    , hue="Country"
 )
-sns.lineplot(
-    data=chile_data
-    , x="Year"
-    , y="GDP_value"
-#    , hue="Country"
-    , ax=axs[1]
+
+plt.show()
+plt.clf()
+
+
+sns.histplot(
+    data=all_data
+    , x="GDP_value"
+    , hue="Country"
 )
-f.tight_layout()
 
 plt.show()
 plt.clf()
 
 
-# In[11]:
+# In[91]:
 
 
-sns.scatterplot(data=chile_data, x="Life expectancy at birth (years)", y="GDP_value")
+# #separate dictionary for Chile
+# chile_data = all_data[all_data.Country == 'Chile']
+
+# #separate dictionary for China
+# china_data = all_data[all_data.Country == 'China']
+
+# #separate dictionary for Germany
+# germany_data = all_data[all_data.Country == 'Germany']
+
+# #separate dictionary for Mexico
+# mexico_data = all_data[all_data.Country == 'Mexico']
+
+# #separate dictionary for United States of America
+# usa_data = all_data[all_data.Country == 'United States of America']
+
+# #separate dictionary for Zimbabwe
+# zimbabwe_data = all_data[all_data.Country == 'Zimbabwe']
+
+
+# In[92]:
+
+
+agg_data = all_data.reindex(columns=["Country", "Life expectancy at birth (years)", "GDP_value"])
+
+print(
+    agg_data.groupby("Country")
+    .agg(["mean", "std", "var"])
+    )
+grouped = agg_data.groupby("Country").mean()
+
+
+life_gdp_cov = np.cov(grouped["Life expectancy at birth (years)"], grouped["GDP_value"])
+print(life_gdp_cov)
+
+life_gdp_cor, p = pearsonr(grouped["Life expectancy at birth (years)"], grouped["GDP_value"])
+print(life_gdp_cor)
+
+#Scatterplot for average GDP against Life expetancy
+sns.scatterplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_value")
+plt.ylabel("GDP (in billions)")
+
+plt.show()
+plt.clf()
+
+#Scatterplot with line
+sns.lmplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_value")
+plt.ylabel("GDP (in billions)")
 
 plt.show()
 plt.clf()
 
 
-# In[12]:
+# In[77]:
 
 
-sns.lmplot(data=chile_data, x="Life expectancy at birth (years)", y="GDP_value")
+countries = all_data['Country'].unique()
 
-plt.show()
-plt.clf()
+for country in countries:
+    country_data = all_data[all_data.Country == country]
+    print(country + " had an average GDP (in billions) from 2000-2015 of", np.mean(country_data["GDP_value"]))
+    print(country + " had an average life expectancy from 2000-2015 of", np.mean(country_data["Life expectancy at birth (years)"]))
 
+    # # median
+    # print(country + " had a median GDP (in billions) from 2000-2015 of", np.median(country_data["GDP_value"]))
+    
+    # # range
+    # print(country + " had a range of GDP (in billions) from 2000-2015 of", np.max(country_data["GDP_value"]) - np.min(country_data["GDP_value"]))
+   
+    # # interquartile range
+    # print(country + " had an interquartile range of GDP (in billions) from 2000-2015 of", np.percentile(country_data["GDP_value"], 75) - np.percentile(country_data["GDP_value"], 25))
+    
+    # # variance
+    # print(country + " had a variance in GDP (in billions) from 2000-2015 of", np.var(country_data["GDP_value"]))
+    
+    # # standard deviation
+    # print(country + " had a standard deviation of GDP (in billions) from 2000-2015 of", np.std(country_data["GDP_value"]))
 
-# In[21]:
+    life_gdp_cov = np.cov(country_data["Life expectancy at birth (years)"], country_data["GDP_value"])
+    print(life_gdp_cov)
 
+    life_gdp_cor, p = pearsonr(country_data["Life expectancy at birth (years)"], country_data["GDP_value"])
+    print(life_gdp_cor)
 
-#data visualations for China
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=china_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-    , ax=axs[0]
-)
-sns.lineplot(
-    data=china_data
-    , x="Year"
-    , y="GDP_value"
-    , ax=axs[1]
-)
-f.tight_layout()
+for country in countries:
+    country_data = all_data[all_data.Country == country]
+    
+    #Line graphs for Life expectancy and GDP
+    f, axs = plt.subplots(1, 2, figsize=(8, 4)
+                         # , gridspec_kw=dict(width_ratios=[4, 3])
+                         )
+    plt.ylabel("GDP (in billions)")
+    plt.xticks(rotation=60)
+    
+    sns.lineplot(
+        data=country_data
+        , x="Year"
+        , y="Life expectancy at birth (years)"
+    #    , hue="Country"
+        , ax=axs[0]
+    )
+    axs[0].set_xticks(years_label)
+    axs[0].set_xticklabels(years_label)
+    
+    plt.title(country)
+    sns.lineplot(
+        data=country_data
+        , x="Year"
+        , y="GDP_value"
+    #    , hue="Country"
+        , ax=axs[1]
+    )
+    axs[1].set_xticks(years_label)
+    axs[1].set_xticklabels(years_label)
+    f.tight_layout()
+    
+    plt.show()
+    plt.clf()
 
-plt.show()
-plt.clf()
+    #Scatterplot for GDP against Life expetancy
+    sns.scatterplot(data=country_data, x="Life expectancy at birth (years)", y="GDP_value", hue='Year')
+    plt.title(country)
+    plt.ylabel("GDP (in billions)")
+    
+    plt.show()
+    plt.clf()
 
-
-sns.scatterplot(data=china_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-sns.lmplot(data=china_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-
-# In[17]:
-
-
-#data visualations for Germany
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=germany_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-    , ax=axs[0]
-)
-sns.lineplot(
-    data=germany_data
-    , x="Year"
-    , y="GDP_value"
-    , ax=axs[1]
-)
-f.tight_layout()
-
-plt.show()
-plt.clf()
-
-
-sns.scatterplot(data=germany_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-sns.lmplot(data=germany_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-
-# In[18]:
-
-
-#data visualations for Mexico
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=mexico_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-    , ax=axs[0]
-)
-sns.lineplot(
-    data=mexico_data
-    , x="Year"
-    , y="GDP_value"
-    , ax=axs[1]
-)
-f.tight_layout()
-
-plt.show()
-plt.clf()
-
-
-sns.scatterplot(data=mexico_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-sns.lmplot(data=mexico_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-
-# In[19]:
-
-
-#data visualations for United States of America
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=usa_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-    , ax=axs[0]
-)
-sns.lineplot(
-    data=usa_data
-    , x="Year"
-    , y="GDP_value"
-    , ax=axs[1]
-)
-f.tight_layout()
-
-plt.show()
-plt.clf()
-
-
-sns.scatterplot(data=usa_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-sns.lmplot(data=usa_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-
-# In[20]:
-
-
-#data visualations for Zimbabwe
-f, axs = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw=dict(width_ratios=[4, 3]))
-sns.lineplot(
-    data=zimbabwe_data
-    , x="Year"
-    , y="Life expectancy at birth (years)"
-    , ax=axs[0]
-)
-sns.lineplot(
-    data=zimbabwe_data
-    , x="Year"
-    , y="GDP_value"
-    , ax=axs[1]
-)
-f.tight_layout()
-
-plt.show()
-plt.clf()
-
-
-sns.scatterplot(data=zimbabwe_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-sns.lmplot(data=zimbabwe_data, x="Life expectancy at birth (years)", y="GDP_value")
-
-plt.show()
-plt.clf()
-
-
-# In[ ]:
-
-
-
+    #Scatterplot with line
+    sns.lmplot(data=country_data, x="Life expectancy at birth (years)", y="GDP_value")
+    plt.ylabel("GDP (in billions)")
+    plt.title(country)
+    
+    plt.show()
+    plt.clf()
 

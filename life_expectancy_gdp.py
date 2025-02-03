@@ -56,10 +56,11 @@ for country in countries:
     print(country + " has a correlation between life expectancy and GDP of", life_gdp_cor * 100, end="\n\n")
 
 
-# In[5]:
+# In[21]:
 
 
 #Lineplot comparing life expectancy for every country in dataset
+plt.figure(figsize=(10, 6))
 ax = sns.lineplot(
     data=all_data
     , x="Year"
@@ -74,7 +75,7 @@ plt.xticks(rotation=40)
 ax.set_xticks(years_label)
 ax.set_xticklabels(years_label)
 
-plt.savefig('life-expectancy-all.png')
+plt.savefig('life-expectancy-all.png', bbox_inches='tight')
 plt.show()
 plt.clf()
 
@@ -90,10 +91,11 @@ plt.show()
 plt.clf()
 
 
-# In[6]:
+# In[20]:
 
 
 #Lineplot comparing GDP for every country in dataset
+plt.figure(figsize=(10, 6))
 ax = sns.lineplot(
     data=all_data
     , x="Year"
@@ -109,7 +111,7 @@ plt.xticks(rotation=40)
 ax.set_xticks(years_label)
 ax.set_xticklabels(years_label)
 
-plt.savefig('GDP-all.png')
+plt.savefig('GDP-all.png', bbox_inches='tight')
 plt.show()
 plt.clf()
 
@@ -163,7 +165,7 @@ plt.show()
 plt.clf()
 
 
-# In[9]:
+# In[22]:
 
 
 #dataframe with data excluding Year
@@ -189,7 +191,7 @@ plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
 
-plt.savefig('GDP-v-life-expectancy-all-scatter.png')
+plt.savefig('GDP-v-life-expectancy-all-scatter.png', bbox_inches='tight')
 plt.show()
 plt.clf()
 
@@ -199,7 +201,7 @@ plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
 
-plt.savefig('GDP-v-life-expectancy-all-linear.png')
+plt.savefig('GDP-v-life-expectancy-all-linear.png', bbox_inches='tight')
 plt.show()
 plt.clf()
 

@@ -165,12 +165,19 @@ plt.show()
 plt.clf()
 
 
-# In[22]:
+# In[23]:
 
 
 #dataframe with data excluding Year
 agg_data = all_data.reindex(columns=["Country", "Life expectancy at birth (years)", "GDP_in_billions"])
 
+print("Averages for \n",
+    agg_data.groupby("Country").mean(), end="\n\n"
+    )
+
+print("Standard Deviations for \n",
+    agg_data.groupby("Country").var(), end="\n\n"
+    )
 
 print("Variances for \n",
     agg_data.groupby("Country").var(), end="\n\n"

@@ -60,16 +60,17 @@ for country in countries:
 
 
 #Lineplot comparing life expectancy for every country in dataset
-sns.lineplot(
+ax = sns.lineplot(
     data=all_data
     , x="Year"
     , y="Life expectancy at birth (years)"
     , hue="Country"
     , palette="colorblind"
 )
+sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))
+plt.title("Life Expectancy per Country")
 plt.ylabel("Life Expectancy")
 plt.xticks(rotation=40)
-ax = plt.subplot()
 ax.set_xticks(years_label)
 ax.set_xticklabels(years_label)
 
@@ -81,6 +82,8 @@ plt.clf()
 g = sns.FacetGrid(all_data, col="Country", hue="Country", col_wrap=3, sharex=False, sharey=False, palette="colorblind")
 g.map(sns.lineplot, "Year", "Life expectancy at birth (years)")
 g.set_axis_labels("Year", "Life expectancy")
+g.fig.subplots_adjust(top=.9)
+g.fig.suptitle("Life Expectancy from 2000-2015")
 
 plt.savefig('life-expectancy-individual.png')
 plt.show()
@@ -91,16 +94,18 @@ plt.clf()
 
 
 #Lineplot comparing GDP for every country in dataset
-sns.lineplot(
+ax = sns.lineplot(
     data=all_data
     , x="Year"
     , y="GDP_in_billions"
     , hue="Country"
     , palette="colorblind"
+    # , legend=False
 )
+sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))
+plt.title("GDP per Country")
 plt.ylabel("GDP (in billions)")
 plt.xticks(rotation=40)
-ax = plt.subplot()
 ax.set_xticks(years_label)
 ax.set_xticklabels(years_label)
 
@@ -108,10 +113,12 @@ plt.savefig('GDP-all.png')
 plt.show()
 plt.clf()
 
-#Separate lineplots for GDP (in billinos) from 2000-2015 for each country in dataset
+#Separate lineplots for GDP (in billions) from 2000-2015 for each country in dataset
 g = sns.FacetGrid(all_data, col="Country", hue="Country", col_wrap=3, sharex=False, sharey=False, palette="colorblind")
 g.map(sns.lineplot, "Year", "GDP_in_billions")
 g.set_axis_labels("Year", "GDP (in billions)")
+g.fig.subplots_adjust(top=.9)
+g.fig.suptitle("GDP from 2000-2015")
 
 plt.savefig('GDP-individual.png')
 plt.show()
@@ -125,6 +132,8 @@ plt.clf()
 g = sns.FacetGrid(all_data, col="Country", hue="Country", col_wrap=3, sharex=False, sharey=False, palette="colorblind")
 g.map(sns.scatterplot, "Life expectancy at birth (years)", "GDP_in_billions")
 g.set_axis_labels("Life expectancy", "GDP (in billions)")
+g.fig.subplots_adjust(top=.9)
+g.fig.suptitle("GDP against Life Expectancy from 2000-2015")
 
 plt.savefig('GDP-v-life-expectancy-individual-scatter.png')
 plt.show()
@@ -146,6 +155,8 @@ h = sns.lmplot(
     , facet_kws=dict(sharex=False, sharey=False)
 )
 h.set_axis_labels("Life expectancy", "GDP (in billions)")
+h.fig.subplots_adjust(top=.9)
+h.fig.suptitle("GDP against Life Expectancy from 2000-2015")
 
 plt.savefig('GDP-v-life-expectancy-individual-linear.png')
 plt.show()
@@ -174,6 +185,7 @@ print(life_gdp_cor, end="\n\n")
 
 #Scatterplot for average GDP against Life expetancy
 sns.scatterplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_in_billions")
+plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
 
@@ -183,6 +195,7 @@ plt.clf()
 
 #Scatterplot with linear regression
 sns.lmplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_in_billions")
+plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
 

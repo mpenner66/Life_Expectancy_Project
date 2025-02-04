@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Project Scope:
+# # Project Scope:
 # Contains data for six different countries, covering years from 2000 to 2015. There no do appear to be significant data anamolies based on initial inspection of the file. GDP data is in scientific format.
 # 
 # 1) Will be comparing changes between the countries, in their GDP and life expectancy, over the span of years in the dataset.
@@ -9,7 +9,7 @@
 # 3) Will gather information on the max, min, mean, other summarical data for each country regarding their GDP and life expectancy.
 # 4) No information is given to what portion of a country's GDP is used for medical expenditures (i.e., treatment, research, subsidies, etc.).
 # 5) Very focued and limited data, does not account for many other variables that may affect life expectancy positively or negatively.
-# 
+# ***
 
 # In[1]:
 
@@ -91,6 +91,11 @@ plt.show()
 plt.clf()
 
 
+# ***
+# ## Commentary 1:
+# Compared to Zimbabwe, the other five countries have significantly higher life expectancies. However, Zimbabwe made the greatest increase, about 15 years, in life expectancy in 2000-2015 observed period, cutting the difference in gap to about half to the next lowest country.
+# ***
+
 # In[20]:
 
 
@@ -126,6 +131,11 @@ plt.savefig('GDP-individual.png')
 plt.show()
 plt.clf()
 
+
+# ***
+# ## Commentary 2:
+# The GDP for the USA is significantly higher than the five countries throughout 2000-2015 time period. During this time, though, the GDP for China increased dramatically compared to the other four countries with lower GDPs. By 2015, the GDP for China was close to same as the GDP was for the USA in 2000.
+# ***
 
 # In[7]:
 
@@ -164,6 +174,11 @@ plt.savefig('GDP-v-life-expectancy-individual-linear.png')
 plt.show()
 plt.clf()
 
+
+# ***
+# ## Commentary 3:
+# Though there is a fairly close correlation for six countries, the correlation for China is distinctly less than the others.
+# ***
 
 # In[23]:
 
@@ -213,6 +228,10 @@ plt.show()
 plt.clf()
 
 
+# ***
+# # Final Commentary
 # Each country recorded an overall increase in GDP and life expectancy from 2000 to 2015, though Chile, Germany, and Mexico showed decreases in GDP in at the end of the time period for the dataset.
-# For each individual country, there seems to be a correlation with their GDP and life expectancy. However, there does not seem to be a correlation with the amount of GDP and the length of life expectancy, as countries with similar levels of life expectancy had vastly different levels of GDP.
+# 
+# For each individual country, there seems to be a correlation with their GDP and life expectancy. However, there does not seem to be a correlation with the amount of GDP and the length of life expectancy, as countries with similar levels of life expectancy had vastly different levels of GDP. For example, Chile and Germany had higher life expectancy than the USA, though they had much lower GDPs. Also, China though averaging the second highest GDP, had the second lowest life expectancy.
+# 
 # With the limited dataset, there is no evidence how, or if, GDP effects life expectancy, or vice versa, for the individual countries.

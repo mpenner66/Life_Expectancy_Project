@@ -8,7 +8,7 @@
 # 2) Will be looking to see changes in life expectancy correlate to changes to GDP, and how so. Do they move up/down together? Or does one go up while the other down?
 # 3) Will gather information on the max, min, mean, other summarical data for each country regarding their GDP and life expectancy.
 # 4) No information is given to what portion of a country's GDP is used for medical expenditures (i.e., treatment, research, subsidies, etc.).
-# 5) Very focued and limited data, does not account for many other variables that may affect life expectancy positively or negatively.
+# 5) Very focued and limited data, does not account for many other variables that may effect life expectancy positively or negatively.
 # ***
 
 # In[1]:
@@ -23,40 +23,47 @@ from scipy.stats import pearsonr
 np.set_printoptions(suppress=True, precision = 1)
 
 
-# In[2]:
+# In[3]:
 
 
 #import csv file
 all_data = pd.read_csv("all_data.csv")
 
 
-# In[3]:
-
-
-#convert GDP data to a more usable format
-all_data["GDP_in_billions"] = all_data["GDP"] / 1000000000
-
-
 # In[4]:
 
 
 #print(all_data.head(), end="\n\n")
+
+#convert GDP data to a more usable format
+all_data["GDP_in_billions"] = all_data["GDP"] / 1000000000
+
+#rename life expectancy to shorter name
+all_data = all_data.rename({'Life expectancy at birth (years)': 'life_expectancy'}, axis=1)
+
+#describe data
 print(all_data.describe(), end="\n\n")
 
+
+# In[5]:
+
+
+#list of countries
 countries = all_data['Country'].unique()
 
+#list of years
 years_label = all_data['Year'].unique()
 
 for country in countries:
     country_data = all_data[all_data.Country == country]
     print(country)
     print(country_data.describe())
-    #life_gdp_cov = np.cov(country_data["Life expectancy at birth (years)"], country_data["GDP_in_billions"])
-    life_gdp_cor, p = pearsonr(country_data["Life expectancy at birth (years)"], country_data["GDP_in_billions"])
+    #life_gdp_cov = np.cov(country_data["life_expectancy"], country_data["GDP_in_billions"])
+    life_gdp_cor, p = pearsonr(country_data["life_expectancy"], country_data["GDP_in_billions"])
     print(country + " has a correlation between life expectancy and GDP of", life_gdp_cor * 100, end="\n\n")
 
 
-# In[21]:
+# In[6]:
 
 
 #Lineplot comparing life expectancy for every country in dataset
@@ -64,7 +71,7 @@ plt.figure(figsize=(10, 6))
 ax = sns.lineplot(
     data=all_data
     , x="Year"
-    , y="Life expectancy at birth (years)"
+    , y="life_expectancy"
     , hue="Country"
     , palette="colorblind"
 )
@@ -81,7 +88,7 @@ plt.clf()
 
 #Separate lineplots for Life expectancy from 2000-2015 for each country in dataset
 g = sns.FacetGrid(all_data, col="Country", hue="Country", col_wrap=3, sharex=False, sharey=False, palette="colorblind")
-g.map(sns.lineplot, "Year", "Life expectancy at birth (years)")
+g.map(sns.lineplot, "Year", "life_expectancy")
 g.set_axis_labels("Year", "Life expectancy")
 g.fig.subplots_adjust(top=.9)
 g.fig.suptitle("Life Expectancy from 2000-2015")
@@ -96,7 +103,7 @@ plt.clf()
 # Compared to Zimbabwe, the other five countries have significantly higher life expectancies. However, Zimbabwe made the greatest increase, about 15 years, in life expectancy in 2000-2015 observed period, cutting the difference in gap to about half to the next lowest country.
 # ***
 
-# In[20]:
+# In[7]:
 
 
 #Lineplot comparing GDP for every country in dataset
@@ -137,12 +144,12 @@ plt.clf()
 # The GDP for the USA is significantly higher than the five countries throughout 2000-2015 time period. During this time, though, the GDP for China increased dramatically compared to the other four countries with lower GDPs. By 2015, the GDP for China was close to same as the GDP was for the USA in 2000.
 # ***
 
-# In[7]:
+# In[8]:
 
 
 #Separate scatterplots for GDP against Life expectancy for each country
 g = sns.FacetGrid(all_data, col="Country", hue="Country", col_wrap=3, sharex=False, sharey=False, palette="colorblind")
-g.map(sns.scatterplot, "Life expectancy at birth (years)", "GDP_in_billions")
+g.map(sns.scatterplot, "life_expectancy", "GDP_in_billions")
 g.set_axis_labels("Life expectancy", "GDP (in billions)")
 g.fig.subplots_adjust(top=.9)
 g.fig.suptitle("GDP against Life Expectancy from 2000-2015")
@@ -152,13 +159,13 @@ plt.show()
 plt.clf()
 
 
-# In[8]:
+# In[9]:
 
 
 #Separate scatterplots with linear regression for GDP against Life expectancy for each country
 h = sns.lmplot(
     data=all_data
-    , x="Life expectancy at birth (years)"
+    , x="life_expectancy"
     , y="GDP_in_billions"
     , col="Country"
     , hue="Country"
@@ -180,11 +187,11 @@ plt.clf()
 # Though there is a fairly close correlation for six countries, the correlation for China is distinctly less than the others.
 # ***
 
-# In[23]:
+# In[10]:
 
 
 #dataframe with data excluding Year
-agg_data = all_data.reindex(columns=["Country", "Life expectancy at birth (years)", "GDP_in_billions"])
+agg_data = all_data.reindex(columns=["Country", "life_expectancy", "GDP_in_billions"])
 
 print("Averages for \n",
     agg_data.groupby("Country").mean(), end="\n\n"
@@ -203,12 +210,12 @@ grouped = agg_data.groupby("Country").mean()
 
 #life_gdp_cov = np.cov(grouped["Life expectancy at birth (years)"], grouped["GDP_in_billions"])
 
-life_gdp_cor, p = pearsonr(grouped["Life expectancy at birth (years)"], grouped["GDP_in_billions"])
+life_gdp_cor, p = pearsonr(grouped["life_expectancy"], grouped["GDP_in_billions"])
 print("Correlation of life expectancy and GDP for all countries combined:")
 print(life_gdp_cor, end="\n\n")
 
 #Scatterplot for average GDP against Life expetancy
-sns.scatterplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_in_billions")
+sns.scatterplot(data=grouped, x="life_expectancy", y="GDP_in_billions")
 plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
@@ -218,7 +225,7 @@ plt.show()
 plt.clf()
 
 #Scatterplot with linear regression
-sns.lmplot(data=grouped, x="Life expectancy at birth (years)", y="GDP_in_billions")
+sns.lmplot(data=grouped, x="life_expectancy", y="GDP_in_billions")
 plt.title("GDP against Life Expectancy from 2000-2015")
 plt.xlabel("Life Expectancy")
 plt.ylabel("GDP (in billions)")
